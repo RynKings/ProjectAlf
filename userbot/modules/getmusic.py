@@ -111,7 +111,7 @@ async def _(event):
     else:
         await event.edit("`What I am Supposed to find?`")
         return
-    await getmusicvideo(query)
+    await getmusicaudio(query)
     l = glob.glob(("*.mp4")) + glob.glob(("*.mkv")) + glob.glob(("*.webm"))
     if l:
         await event.edit("`Yeah..! i found something..`")
