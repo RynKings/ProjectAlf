@@ -51,7 +51,7 @@ async def getmusicaudio(cat):
         audio_link = i.get_attribute("href")
         break
     filename = random.randint(1,99999999)
-    command = 'youtube-dl -f bestaudio -o ' + str(filename) + '.mp3 ' + audio_link
+    command = 'youtube-dl -f bestaudio ' + audio_link
     os.system(command)
 
 @register(outgoing=True, pattern=r"^\.netease (?:(now)|(.*) - (.*))")
