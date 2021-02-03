@@ -7,6 +7,7 @@ import glob
 import os
 import shutil
 import time
+import random
 
 import deezloader
 from hachoir.metadata import extractMetadata
@@ -40,6 +41,18 @@ async def getmusicvideo(cat):
     command = 'youtube-dl -f "[filesize<50M]" --merge-output-format mp4 ' + video_link
     os.system(command)
 
+async def getmusicaudio(cat):
+    audio_link = ""
+    search = cat
+    driver = await chrome()
+    driver.get("https://www.youtube.com/results?search_query=" + search)
+    user_data = driver.find_elements_by_xpath('//*[@id="video-title"]')
+    for i in user_data:
+        audio_link = i.get_attribute("href")
+        break
+    filename = random.randint(1,99999999)
+    command = 'youtube-dl -f bestaudio -o ' + str(filename) + '.mp3 ' + audio_link
+    os.system(command)
 
 @register(outgoing=True, pattern=r"^\.netease (?:(now)|(.*) - (.*))")
 async def _(event):
@@ -149,6 +162,68 @@ async def _(event):
     except BaseException:
         os.remove(thumb_image)
         os.system("rm *.mkv *.mp4 *.webm")
+        return
+
+@register(outgoing=True, pattern=r"^\.msong(?: |$)(.*)")
+async def _(event):
+    reply_to_id = event.message.id
+    if event.reply_to_msg_id:
+        reply_to_id = event.reply_to_msg_id
+    reply = await event.get_reply_message()
+    if event.pattern_match.group(1):
+        query = event.pattern_match.group(1)
+        await event.edit("`Wait..! I am finding your videosong..`")
+    elif reply:
+        query = str(reply.message)
+        await event.edit("`Wait..! I am finding your videosong..`")
+    else:
+        await event.edit("`What I am Supposed to find?`")
+        return
+    await getmusicvideo(query)
+    l = glob.glob(("*.mp3")) + glob.glob(("*.fla")) + glob.glob(("*.webm"))
+    if l:
+        await event.edit("`Yeah..! i found something..`")
+    else:
+        await event.edit(f"`Sorry..! i can't find anything with` **{query}**")
+        return
+    try:
+        loa = l[0]
+        metadata = extractMetadata(createParser(loa))
+        duration = 0
+        title = ""
+        performer = ""
+        if metadata.has("duration"):
+            duration = metadata.get("duration").seconds
+        if metadata.has("title"):
+            title = metadata.get("title")
+        if metadata.has("artist"):
+            performer = metadata.get("artist")
+        c_time = time.time()
+        await event.client.send_file(
+            event.chat_id,
+            loa,
+            force_document=False,
+            allow_cache=False,
+            caption=query,
+            supports_streaming=True,
+            reply_to=reply_to_id,
+            attributes=[
+                DocumentAttributeAudio(
+                    duration=duration,
+                    voice=False,
+                    title=title,
+                    performer=performer,
+                    waveform=None,
+                )
+            ],
+            progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
+                progress(d, t, event, c_time, "[UPLOAD]", loa)
+            ),
+        )
+        await event.edit(f"**{query}** `Uploaded Successfully..!`")
+        os.system("rm *.mp3 *.fla *.webm")
+    except BaseException:
+        os.system("rm *.mp3 *.fla *.webm")
         return
 
 
@@ -332,6 +407,8 @@ CMD_HELP.update(
         "\nUsage: Download current LastFM scrobble use `@WooMaiBot`."
         "\n\n>`.vsong` **Artist - Song Title**"
         "\nUsage: Finding and uploading videoclip."
+        "\n\n>`.msong` **Artist - Song Title**"
+        "\nUsage: Finding and uploading musicclip."
         "\n\n>`.smd <Artist - Song Title>`"
         "\nUsage: Download music from Spotify"
         "\n\n>`.deez <spotify/deezer link> FORMAT`"
