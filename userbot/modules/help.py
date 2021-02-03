@@ -29,7 +29,7 @@ async def hep(event):
         string2 = "-------------------------------------------------------------"
         for i in CMD_HELP:
             string += "`" + str(i)
-            string += "`  •  "
+            string += "`\n•  "
         await event.edit(
             f"{string1}" f"{string3}" f"{string2}\n" f"{string}" f"{string2}"
         )
