@@ -19,7 +19,7 @@ import re
 
 from telethon.tl import types
 
-from userbot import CMD_HELP, bot
+from userbot import CMD_HELP, bot, BOTLOG, BOTLOG_CHATID
 from userbot.events import register
 
 usernexp = re.compile(r"@(\w{3,32})\[(.+?)\]")
@@ -30,9 +30,17 @@ nameexp = re.compile(r"\[([\w\S]+)\]\(tg://user\?id=(\d+)\)\[(.+?)\]")
 async def mention(event):
     newstr = event.text
     if event.entities:
-        print(newstr)
+        if BOTLOG:
+            await event.client.send_message(
+                BOTLOG_CHATID,
+                newstr,
+            )
         newstr = nameexp.sub(r'<a href="tg://user?id=\2">\3</a>', newstr, 0)
-        print(newstr)
+        if BOTLOG:
+            await event.client.send_message(
+                BOTLOG_CHATID,
+                newstr,
+            )
         for match in usernexp.finditer(newstr):
             user = match.group(1)
             text = match.group(2)
