@@ -495,10 +495,10 @@ async def yt_search(video_q):
         output += f"● `{i['title']}`\nhttps://www.youtube.com{i['url_suffix']}\n\n"
     await video_q.edit(output, link_preview=False)
 
-@register(outgoing=True, pattern=r"\.(ytplay|play) (.*) (.*)")
+@register(outgoing=True, pattern=r"\.(ytmusic|ytvideo|play) (.*)")
 async def youtube_play(message):
     query = message.pattern_match.group(2)
-    type = message.pattern_match.group(3)
+    type = message.pattern_match.group(1)
 
     if not query:
         await message.edit("`Enter query to download`")
@@ -512,14 +512,9 @@ async def youtube_play(message):
 
     url = f"https://www.youtube.com{results['videos'][0]['url_suffix']}"
 
-    if not type:
-        type = 'audio'
-    else:
-        type = 'video'
-
     await message.edit('`Preparing to download...`')
 
-    if type == "audio":
+    if type == "ytmusic" or type == "play":
         opts = {
             "format": "bestaudio",
             "addmetadata": True,
@@ -542,7 +537,7 @@ async def youtube_play(message):
         video = False
         song = True
 
-    elif type == "video":
+    elif type == "ytvideo":
         opts = {
             "format": "best",
             "addmetadata": True,
