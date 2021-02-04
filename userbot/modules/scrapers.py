@@ -510,7 +510,7 @@ async def youtube_play(message):
             "`Youtube Search gone retard.\nCan't search this query!`"
         )
 
-    url = f"https://www.youtube.com{results[0]['url_suffix']}"
+    url = f"https://www.youtube.com{results['videos'][0]['url_suffix']}"
 
     if not type:
         type = 'audio'
