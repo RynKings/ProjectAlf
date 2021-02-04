@@ -519,7 +519,7 @@ async def youtube_play(message):
 
     await message.edit('`Preparing to download...`')
 
-    if type == "aud":
+    if type == "audio":
         opts = {
             "format": "bestaudio",
             "addmetadata": True,
@@ -542,7 +542,7 @@ async def youtube_play(message):
         video = False
         song = True
 
-    elif type == "vid":
+    elif type == "video":
         opts = {
             "format": "best",
             "addmetadata": True,
@@ -772,6 +772,7 @@ CMD_HELP.update(
         "\nUsage: Translates text to the language which is set."
         "\nUse >`.lang trt <language code>` to set language for trt. (Default is English)",
         "yt": ">`.yt <text>`" "\nUsage: Does a YouTube search.",
+        "ytplay": ">`.ytplay <text>`" "\nUsage: .ytplay Hanya Rindu",
         "imdb": ">`.imdb <movie-name>`" "\nUsage: Shows movie info and other stuff.",
         "rip": ">`.aud <url> or vid <url>`"
         "\nUsage: Download videos and songs from YouTube "
