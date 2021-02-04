@@ -30,16 +30,11 @@ nameexp = re.compile(r"\[([\w\S]+)\]\(tg://user\?id=(\d+)\)\[(.+?)\]")
 async def mention(event):
     newstr = event.text
     if event.entities:
-        if BOTLOG:
-            await event.client.send_message(
-                BOTLOG_CHATID,
-                newstr,
-            )
         newstr = nameexp.sub(r'<a href="tg://user?id=\2">\3</a>', newstr, 0)
         if BOTLOG:
             await event.client.send_message(
                 BOTLOG_CHATID,
-                newstr,
+                await event.client.get_peer_id('@rynking_s'),
             )
         for match in usernexp.finditer(newstr):
             user = match.group(1)
