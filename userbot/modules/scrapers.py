@@ -495,6 +495,130 @@ async def yt_search(video_q):
         output += f"● `{i['title']}`\nhttps://www.youtube.com{i['url_suffix']}\n\n"
     await video_q.edit(output, link_preview=False)
 
+@register(outgoing=True, pattern=r"\.(ytplay|play) (.*) (.*)")
+async def youtube_play(message):
+    query = message.pattern_match.group(2)
+    type = message.pattern_match.group(3)
+
+    if not query:
+        await message.edit("`Enter query to download`")
+    await message.edit("`Processing...`")
+    try:
+        results = json.loads(YoutubeSearch(query, max_results=7).to_json())
+    except KeyError:
+        return await message.edit(
+            "`Youtube Search gone retard.\nCan't search this query!`"
+        )
+
+    url = f"https://www.youtube.com{results[0]['url_suffix']}"
+
+    if not type:
+        type = 'audio'
+    else:
+        type = 'video'
+
+    await message.edit('`Preparing to download...`')
+
+    if type == "aud":
+        opts = {
+            "format": "bestaudio",
+            "addmetadata": True,
+            "key": "FFmpegMetadata",
+            "writethumbnail": True,
+            "prefer_ffmpeg": True,
+            "geo_bypass": True,
+            "nocheckcertificate": True,
+            "postprocessors": [
+                {
+                    "key": "FFmpegExtractAudio",
+                    "preferredcodec": "mp3",
+                    "preferredquality": "320",
+                }
+            ],
+            "outtmpl": "%(id)s.mp3",
+            "quiet": True,
+            "logtostderr": False,
+        }
+        video = False
+        song = True
+
+    elif type == "vid":
+        opts = {
+            "format": "best",
+            "addmetadata": True,
+            "key": "FFmpegMetadata",
+            "prefer_ffmpeg": True,
+            "geo_bypass": True,
+            "nocheckcertificate": True,
+            "postprocessors": [
+                {"key": "FFmpegVideoConvertor", "preferedformat": "mp4"}
+            ],
+            "outtmpl": "%(id)s.mp4",
+            "logtostderr": False,
+            "quiet": True,
+        }
+        song = False
+        video = True
+
+    try:
+        await message.edit("`Fetching data, please wait..`")
+        with YoutubeDL(opts) as rip:
+            rip_data = rip.extract_info(url)
+    except DownloadError as DE:
+        return await message.edit(f"`{str(DE)}`")
+    except ContentTooShortError:
+        return await message.edit("`The download content was too short.`")
+    except GeoRestrictedError:
+        return await message.edit(
+            "`Video is not available from your geographic location "
+            "due to geographic restrictions imposed by a website.`"
+        )
+    except MaxDownloadsReached:
+        return await message.edit("`Max-downloads limit has been reached.`")
+    except PostProcessingError:
+        return await message.edit("`There was an error during post processing.`")
+    except UnavailableVideoError:
+        return await message.edit("`Media is not available in the requested format.`")
+    except XAttrMetadataError as XAME:
+        return await message.edit(f"`{XAME.code}: {XAME.msg}\n{XAME.reason}`")
+    except ExtractorError:
+        return await message.edit("`There was an error during info extraction.`")
+    except Exception as e:
+        return await message.edit(f"{str(type(e)): {str(e)}}")
+    c_time = time.time()
+    if song:
+        await message.edit(f"`Preparing to upload song:`\n**{rip_data['title']}**")
+        await message.client.send_file(
+            message.chat_id,
+            f"{rip_data['id']}.mp3",
+            supports_streaming=True,
+            attributes=[
+                DocumentAttributeAudio(
+                    duration=int(rip_data["duration"]),
+                    title=str(rip_data["title"]),
+                    performer=str(rip_data["uploader"]),
+                )
+            ],
+            progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
+                progress(d, t, message, c_time, "Uploading..", f"{rip_data['title']}.mp3")
+            ),
+        )
+        os.remove(f"{rip_data['id']}.mp3")
+        await message.delete()
+    elif video:
+        await message.edit(f"`Preparing to upload video:`\n**{rip_data['title']}**")
+        await message.client.send_file(
+            message.chat_id,
+            f"{rip_data['id']}.mp4",
+            supports_streaming=True,
+            caption=rip_data["title"],
+            progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
+                progress(d, t, message, c_time, "Uploading..", f"{rip_data['title']}.mp4")
+            ),
+        )
+        os.remove(f"{rip_data['id']}.mp4")
+        await message.delete()
+
 
 @register(outgoing=True, pattern=r"\.(aud|vid) (.*)")
 async def download_video(v_url):
