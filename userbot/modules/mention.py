@@ -31,17 +31,12 @@ async def mention(event):
     newstr = event.text
     if event.entities:
         newstr = nameexp.sub(r'<a href="tg://user?id=\2">\3</a>', newstr, 0)
-        peer = await event.client.get_peer_id('@rynking_s')
-        if BOTLOG:
-            await event.client.send_message(
-                BOTLOG_CHATID,
-                str(peer),
-            )
         for match in usernexp.finditer(newstr):
             user = match.group(1)
+            user_id = await event.client.get_entity(user)
             text = match.group(2)
             name, entities = await bot._parse_message_text(text, "md")
-            rep = f'<a href="tg://resolve?domain={user}">{name}</a>'
+            rep = f'<a href="tg://user?id={user_id.id}">{name}</a>'
             if entities:
                 for e in entities:
                     tag = None
@@ -67,7 +62,7 @@ async def mention(event):
 CMD_HELP.update(
     {
         "mention": "Mention users with a custom name."
-        "\nUsage: `Hi @ender1324[bluid boi]`"
-        "\nResult: Hi [bluid boi](tg://resolve?domain=ender1324)"
+        "\nUsage: `Hi @rynking_s[Nice boy]`"
+        "\nResult: Hi [Nice boy](tg://user?id=711384773)"
     }
 )
