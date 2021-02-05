@@ -414,10 +414,10 @@ with bot:
 
     if BOTLOG:
         members = []
-        async for user in bot.iter_participants(BOTLOG_CHATID):
+        for user in bot.iter_participants(BOTLOG_CHATID):
             members.append(user.id)
 
-        helper_id = await tgbot.get_me()
+        helper_id = tgbot.get_me()
         helper_id = helper_id.id
 
         if helper_id not in members:
