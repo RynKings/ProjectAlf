@@ -15,7 +15,7 @@ from traceback import format_exc
 import requests
 from telethon import events
 
-from userbot import BOTLOG_CHATID, LOGSPAMMER, bot
+from userbot import BOTLOG_CHATID, LOGSPAMMER, bot, PRINT_LOGS
 
 
 def register(**args):
@@ -162,7 +162,7 @@ def register(**args):
                         )
                         url = f"https://nekobin.com/raw/{key}"
                         anu = f"{text}\n`Here the error:`\nPasted to: [Nekobin]({url})"
-                        await check.client.send_message(send_to, anu)
+                        await PRINT_LOGS(anu)
                         remove("error.log")
             else:
                 pass

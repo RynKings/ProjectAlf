@@ -5,11 +5,37 @@
 #
 
 import asyncio
+import re
 from os import remove
 from sys import executable
 
-from userbot import BOTLOG, BOTLOG_CHATID, CMD_HELP, TERM_ALIAS
+from userbot import BOTLOG, BOTLOG_CHATID, CMD_HELP, TERM_ALIAS, PRINT_LOGS
 from userbot.events import register
+
+
+@register(outgoing=True, pattern=r'!exec(?: |$)(.*)')
+async def execute_bot(message):
+    if message.is_channel and not message.is_group:
+        return await message.edit("`Eval isn't permitted on channels`")
+
+    if message.pattern_match.group(1):
+        expression = message.pattern_match.group(1)
+    else:
+        return await message.edit("``` Give an expression to evaluate. ```")
+
+    if expression in ("userbot.session", "config.env"):
+        return await message.edit("`That's a dangerous operation! Not Permitted!`")
+
+    if 'print' in expression:
+        p   = re.search(r'print(\s+|)\(', str(expression)).group(0)
+        expression = expression.replace(p, 'await message.client.send_message(message.chat.id, ')
+    exec(
+        f'async def __ex(message): ' +
+        ''.join(f'\n {l}' for l in expression.split('\n'))
+    )
+
+    # Get `__ex` from local variables, call it and return the result
+    return await locals()['__ex'](message)
 
 
 @register(outgoing=True, pattern=r"^\.eval(?: |$)(.*)")
@@ -60,8 +86,8 @@ async def evaluate(query):
         )
 
     if BOTLOG:
-        await query.client.send_message(
-            BOTLOG_CHATID, f"Eval query {expression} was executed successfully"
+        await PRINT_LOGS(
+            f"Eval query {expression} was executed successfully"
         )
 
 
@@ -122,8 +148,8 @@ async def run(run_q):
         )
 
     if BOTLOG:
-        await run_q.client.send_message(
-            BOTLOG_CHATID, "Exec query " + codepre + " was executed successfully"
+        await PRINT_LOGS(
+            "Exec query " + codepre + " was executed successfully"
         )
 
 

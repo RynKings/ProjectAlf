@@ -10,7 +10,7 @@ from sys import argv
 
 from telethon.errors.rpcerrorlist import PhoneNumberInvalidError
 
-from userbot import LOGS, bot, BOTLOG_CHATID, BOTLOG
+from userbot import LOGS, bot, BOTLOG_CHATID, BOTLOG, PRINT_LOGS
 from userbot.modules import ALL_MODULES
 
 INVALID_PH = (
@@ -30,7 +30,7 @@ for module_name in ALL_MODULES:
 
 
 if BOTLOG:
-    bot.send_message(BOTLOG_CHATID, 'Bot is running now !!!\nType : .alive or .on')
+    await PRINT_LOGS('Bot is running now !!!\nType : .alive or .on')
 
 LOGS.info("You are running ProjectAlf [v2]")
 

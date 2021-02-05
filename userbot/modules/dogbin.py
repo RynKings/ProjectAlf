@@ -8,7 +8,7 @@ import os
 
 from requests import exceptions, get, post
 
-from userbot import BOTLOG, BOTLOG_CHATID, CMD_HELP, TEMP_DOWNLOAD_DIRECTORY
+from userbot import BOTLOG, BOTLOG_CHATID, CMD_HELP, TEMP_DOWNLOAD_DIRECTORY, PRINT_LOGS
 from userbot.events import register
 
 DOGBIN_URL = "https://del.dog/"
@@ -71,8 +71,7 @@ async def paste(pstl):
 
     await pstl.edit(reply_text)
     if BOTLOG:
-        await pstl.client.send_message(
-            BOTLOG_CHATID,
+        await PRINT_LOGS(
             "Paste query was executed successfully",
         )
 
@@ -123,8 +122,7 @@ async def get_dogbin_content(dog_url):
 
     await dog_url.edit(reply_text)
     if BOTLOG:
-        await dog_url.client.send_message(
-            BOTLOG_CHATID,
+        await PRINT_LOGS(
             "Get dogbin content query was executed successfully",
         )
 
@@ -176,8 +174,7 @@ async def neko(nekobin):
 
     await nekobin.edit(reply_text)
     if BOTLOG:
-        await nekobin.client.send_message(
-            BOTLOG_CHATID,
+        await PRINT_LOGS(
             "Paste query was executed successfully",
         )
 

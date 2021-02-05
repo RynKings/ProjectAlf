@@ -412,6 +412,19 @@ with bot:
         )
         sys.exit(1)
 
+    if BOTLOG:
+        members = []
+        async for user in bot.iter_participants(BOTLOG_CHATID):
+            members.append(user.id)
+
+        helper_id = await tgbot.get_me()
+        helper_id = helper_id.id
+
+        if helper_id not in members:
+            PRINT_LOGS = lambda x: tgbot.send_message(uid, x)
+        else:
+            PRINT_LOGS = lambda x: tgbot.send_message(BOTLOG_CHATID, x)
+
 # Global Variables
 COUNT_MSG = 0
 USERS = {}
@@ -419,3 +432,5 @@ COUNT_PM = {}
 LASTMSG = {}
 ISAFK = False
 AFKREASON = None
+HELPER_BOT = tgbot
+PRINT_LOGS = PRINT_LOGS
