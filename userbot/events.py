@@ -162,7 +162,7 @@ def register(**args):
                         )
                         url = f"https://nekobin.com/raw/{key}"
                         anu = f"{text}\n`Here the error:`\nPasted to: [Nekobin]({url})"
-                        PRINT_LOGS(anu)
+                        await PRINT_LOGS(anu)
                         remove("error.log")
             else:
                 pass

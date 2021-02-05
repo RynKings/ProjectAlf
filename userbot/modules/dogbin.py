@@ -71,7 +71,7 @@ async def paste(pstl):
 
     await pstl.edit(reply_text)
     if BOTLOG:
-        PRINT_LOGS(
+        await PRINT_LOGS(
             "Paste query was executed successfully",
         )
 
@@ -122,7 +122,7 @@ async def get_dogbin_content(dog_url):
 
     await dog_url.edit(reply_text)
     if BOTLOG:
-        PRINT_LOGS(
+        await PRINT_LOGS(
             "Get dogbin content query was executed successfully",
         )
 
@@ -174,7 +174,7 @@ async def neko(nekobin):
 
     await nekobin.edit(reply_text)
     if BOTLOG:
-        PRINT_LOGS(
+        await PRINT_LOGS(
             "Paste query was executed successfully",
         )
 
