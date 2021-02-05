@@ -86,7 +86,7 @@ async def evaluate(query):
         )
 
     if BOTLOG:
-        PRINT_LOGS(
+        await PRINT_LOGS(
             f"Eval query {expression} was executed successfully"
         )
 
@@ -105,7 +105,8 @@ async def run(run_q):
         )
 
     if code in ("userbot.session", "config.env"):
-        return await run_q.edit("`That's a dangerous operation! Not Permitted!`")
+        if run_q.is_group:
+            return await run_q.edit("`That's a dangerous operation! Not Permitted!`")
 
     if len(code.splitlines()) <= 5:
         codepre = code
@@ -173,7 +174,8 @@ async def terminal_runner(term):
         )
 
     if command in ("userbot.session", "config.env"):
-        return await term.edit("`That's a dangerous operation! Not Permitted!`")
+        if term.is_group:
+            return await term.edit("`That's a dangerous operation! Not Permitted!`")
 
     process = await asyncio.create_subprocess_shell(
         command, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
