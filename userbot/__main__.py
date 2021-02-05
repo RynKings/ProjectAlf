@@ -30,7 +30,7 @@ for module_name in ALL_MODULES:
 
 
 if BOTLOG:
-    await PRINT_LOGS('Bot is running now !!!\nType : .alive or .on')
+    PRINT_LOGS('Bot is running now !!!\nType : .alive or .on')
 
 LOGS.info("You are running ProjectAlf [v2]")
 
