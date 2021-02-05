@@ -28,7 +28,7 @@ async def execute_bot(message):
 
     if 'print' in expression:
         p   = re.search(r'print(\s+|)\(', str(expression)).group(0)
-        expression = expression.replace(p, 'await m.client.send_message(m.chat.id, ')
+        expression = expression.replace(p, 'await m.client.send_message(m.chat_id, ')
     expression = f'async def __ex(m): ' + ''.join(f'\n    {l}' for l in expression.split('\n'))
     if BOTLOG:
         await PRINT_LOGS(f'`{expression}`')
