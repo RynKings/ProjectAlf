@@ -10,7 +10,7 @@ from sys import argv
 
 from telethon.errors.rpcerrorlist import PhoneNumberInvalidError
 
-from userbot import LOGS, bot
+from userbot import LOGS, bot, BOTLOG_CHATID, BOTLOG
 from userbot.modules import ALL_MODULES
 
 INVALID_PH = (
@@ -28,6 +28,9 @@ except PhoneNumberInvalidError:
 for module_name in ALL_MODULES:
     imported_module = import_module("userbot.modules." + module_name)
 
+
+if BOTLOG:
+    bot.send_message(BOTLOG_CHATID, 'Bot is running now !!!\nType : .alive or .on')
 
 LOGS.info("You are running ProjectAlf [v2]")
 
