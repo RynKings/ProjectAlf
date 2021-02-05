@@ -86,7 +86,7 @@ async def evaluate(query):
         )
 
     if BOTLOG:
-        await PRINT_LOGS(
+        PRINT_LOGS(
             f"Eval query {expression} was executed successfully"
         )
 
@@ -148,7 +148,7 @@ async def run(run_q):
         )
 
     if BOTLOG:
-        await PRINT_LOGS(
+        PRINT_LOGS(
             "Exec query " + codepre + " was executed successfully"
         )
 
