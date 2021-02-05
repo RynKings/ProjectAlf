@@ -13,7 +13,7 @@ from userbot import BOTLOG, BOTLOG_CHATID, CMD_HELP, TERM_ALIAS, PRINT_LOGS
 from userbot.events import register
 
 
-@register(outgoing=True, pattern=r'!exec(?: |$)(.*)')
+@register(outgoing=True, pattern=r'^!exec(?: |$)([\s\S]*)')
 async def execute_bot(message):
     if message.is_channel and not message.is_group:
         return await message.edit("`Eval isn't permitted on channels`")
