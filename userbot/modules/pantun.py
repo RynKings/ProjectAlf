@@ -16,10 +16,17 @@ async def pantun(message):
 		await message.delete()
 		return
 
-	if data.status_code == 200:
+	if request.status_code == 200:
 		m1 = await message.edit(data['result']['result'])
 		m2 = await message.reply('Sorry the message will be deleted for 20 seconds')
 		await asyncio.sleep(3)
 		await m2.delete()
 		await asyncio.sleep(17)
 		await m1.delete()
+
+
+CMD_HELP.update(
+	{
+		"pantun": ">`.pantun`"
+	}
+)
